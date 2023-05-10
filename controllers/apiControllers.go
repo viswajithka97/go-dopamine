@@ -11,31 +11,20 @@ func GetAllUsers(c *gin.Context) {
 
 	data := []models.GetAllUsers{}
 
-	initializers.DB.Table("users").
-		// .Joins("left join category_selection on category_selection.user_id = users.id").
-		Find(&data)
+	initializers.DB.Table("users").Find(&data)
+	// 	Find(&data)
+
+	// initializers.DB.
+	// 	 Table("users").
+	// 	Select("users.*,category_selection.user_id").
+	// 	Joins("INNER JOIN category_selection ON category_selection.user_id = users.id").
+	// 	Scan(&data)
 
 	c.JSON(200, gin.H{
-		"response": data,
 		"total":    len(data),
+		"response": data,
 	})
 
-	// create a post
-
-	// posts := models.Post{Title: body.Title, Body: body.Body}
-
-	// result := initializers.DB.Create(&posts)
-
-	// if result.Error != nil {
-	// 	c.Status(400)
-	// 	return
-	// }
-
-	// return it
-
-	// c.JSON(200, gin.H{
-	// "posts": posts,
-	// })
 }
 
 func FetchAllPosts(c *gin.Context) {
