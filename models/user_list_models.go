@@ -44,4 +44,6 @@ type GetAllUsers struct {
 	Type               *string `json:"type"`
 	Status             *string `json:"status"`
 	CategoryIDs        string  `gorm:"column:category_ids"`
+	// CategoryIDs    []string `gorm:"-"`
+	// CategoryIDsStr string   `gorm:"column:category_ids"`
 }

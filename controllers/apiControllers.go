@@ -9,20 +9,32 @@ import (
 
 func GetAllUsers(c *gin.Context) {
 
-	data := []models.GetAllUsers{}
+	// data := []models.GetAllUsers{}
+
+	var user []models.GetAllUsers
+
+	// initializers.
+	// 	DB.
+	// 	Table("users").
+	// 	Joins("left join category_selection ON users.id = category_selection.user_id").
+	// 	Select("users.*, GROUP_CONCAT(category_selection.category_id) as category_ids").
+	// 	Group("users.id").
+	// 	// Where("users.id = ?", 585).
+	// 	Find(&data)
 
 	initializers.
-		DB.
-		Table("users").
-		Joins("left join category_selection ON users.id = category_selection.user_id").
-		Select("users.*, GROUP_CONCAT(category_selection.category_id) as category_ids").
-		Group("users.id").
+		DB.Table("users").
+		Select("users.*, GROUP_CONCAT(category_selection.category_id SEPARATOR ',') as category_ids").
+		Joins("LEFT JOIN category_selection ON users.id = category_selection.user_id").
 		// Where("users.id = ?", 585).
-		Find(&data)
+		Group("users.id").
+		Scan(&user)
+
+	// user.CategoryIDs = strings.Split(user.CategoryIDsStr, ",")
 
 	c.JSON(200, gin.H{
-		// "total":    len(data),
-		"response": data,
+		"total":    len(user),
+		"response": user,
 	})
 
 }
