@@ -39,6 +39,49 @@ func GetAllUsers(c *gin.Context) {
 
 }
 
+func GetSuggestedSquads(c *gin.Context) {
+
+	// type Squad struct {
+	// 	ID   uint   `gorm:"column:squad_id"`
+	// 	Name string `gorm:"column:squad_name"`
+	// }
+
+	// type Customer struct {
+	// 	UserID    uint   `gorm:"column:user_id"`
+	// 	FirstName string `gorm:"column:first_name"`
+	// }
+
+	type CustomerSquadsResponse struct {
+		// Customer   Customer `json:"column" gorm:"foreignKey:UserID"`
+		SquadIDs string `json:"squad_ids"`
+		// SquadNames []string `json:"squad_names"`
+	}
+	var response CustomerSquadsResponse
+	// initializers.DB.Table("customer").
+	// 	Select("customer.first_name, squad_members.user_id, JSON_ARRAYAGG(squad_members.squad_id) as squad_ids, JSON_ARRAYAGG(squads.name) as squad_names").
+	// 	Joins("LEFT JOIN squad_members ON customer.user_id = squad_members.user_id").
+	// 	Joins("LEFT JOIN squads ON squad_members.squad_id = squads.id").
+	// 	Where("customer.user_id = ?", 580).
+	// 	Where("JSON_CONTAINS(customer.interests, cast(squads.category as char), '$')").
+	// 	Group("customer.user_id").
+	// 	Find(&response)
+
+	initializers.DB.
+		Table("customer").
+		Select("customer.first_name, squad_members.user_id, JSON_ARRAYAGG(squad_members.squad_id) as squad_ids, JSON_ARRAYAGG(squads.name) as squad_names").
+		Joins("LEFT JOIN squad_members ON customer.user_id = squad_members.user_id").
+		Joins("LEFT JOIN squads ON squad_members.squad_id = squads.id").
+		Where("customer.user_id = ?", 580).
+		Where("JSON_CONTAINS(customer.interests, cast(squads.category as char), '$')").
+		Group("customer.user_id").
+		Find(&response)
+
+	c.JSON(200, gin.H{
+		"response": response,
+	})
+
+}
+
 // func FetchAllPosts(c *gin.Context) {
 
 // 	// get the posts
