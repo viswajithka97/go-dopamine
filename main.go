@@ -17,7 +17,7 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/getAllUsers", controllers.GetAllUsers)
-	r.GET("/getSuggestedSquads", controllers.GetSuggestedSquads)
+	r.POST("/getSuggestedSquads", controllers.GetSuggestedSquads)
 
 	r.Run()
 }

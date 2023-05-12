@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"encoding/json"
 	"go-dopamine/initializers"
 	"go-dopamine/models"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,14 +21,13 @@ func GetAllUsers(c *gin.Context) {
 	// 	Joins("left join category_selection ON users.id = category_selection.user_id").
 	// 	Select("users.*, GROUP_CONCAT(category_selection.category_id) as category_ids").
 	// 	Group("users.id").
-	// 	// Where("users.id = ?", 585).
+	// 	Where("users.id = ?", 585).
 	// 	Find(&data)
 
 	initializers.
 		DB.Table("users").
 		Select("users.*, GROUP_CONCAT(category_selection.category_id SEPARATOR ',') as category_ids").
 		Joins("LEFT JOIN category_selection ON users.id = category_selection.user_id").
-		// Where("users.id = ?", 585).
 		Group("users.id").
 		Scan(&user)
 
@@ -52,32 +53,38 @@ func GetSuggestedSquads(c *gin.Context) {
 	// }
 
 	type CustomerSquadsResponse struct {
-		// Customer   Customer `json:"column" gorm:"foreignKey:UserID"`
 		SquadIDs string `json:"squad_ids"`
-		// SquadNames []string `json:"squad_names"`
 	}
 	var response CustomerSquadsResponse
-	// initializers.DB.Table("customer").
-	// 	Select("customer.first_name, squad_members.user_id, JSON_ARRAYAGG(squad_members.squad_id) as squad_ids, JSON_ARRAYAGG(squads.name) as squad_names").
-	// 	Joins("LEFT JOIN squad_members ON customer.user_id = squad_members.user_id").
-	// 	Joins("LEFT JOIN squads ON squad_members.squad_id = squads.id").
-	// 	Where("customer.user_id = ?", 580).
-	// 	Where("JSON_CONTAINS(customer.interests, cast(squads.category as char), '$')").
-	// 	Group("customer.user_id").
-	// 	Find(&response)
+	data := []models.SuggestedSquadsModel{}
+
+	var body struct {
+		User_Id int `json:"user_id"`
+	}
+
+	c.Bind(&body)
 
 	initializers.DB.
 		Table("customer").
-		Select("customer.first_name, squad_members.user_id, JSON_ARRAYAGG(squad_members.squad_id) as squad_ids, JSON_ARRAYAGG(squads.name) as squad_names").
+		Select("squad_members.user_id, JSON_ARRAYAGG(squad_members.squad_id) as squad_ids").
 		Joins("LEFT JOIN squad_members ON customer.user_id = squad_members.user_id").
 		Joins("LEFT JOIN squads ON squad_members.squad_id = squads.id").
-		Where("customer.user_id = ?", 580).
+		Where("customer.user_id = ?", body.User_Id).
 		Where("JSON_CONTAINS(customer.interests, cast(squads.category as char), '$')").
 		Group("customer.user_id").
 		Find(&response)
 
+	log.Println(response.SquadIDs)
+
+	var squadIds []int
+	json.Unmarshal([]byte(response.SquadIDs), &squadIds)
+
+	log.Println(squadIds)
+
+	initializers.DB.Table("squads").Where("squads.id = ?", squadIds).Find(&data)
+
 	c.JSON(200, gin.H{
-		"response": response,
+		"response": data,
 	})
 
 }

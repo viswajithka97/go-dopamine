@@ -1,7 +1,7 @@
 package models
 
 type SuggestedSquadsModel struct {
-	SquadID      int64  `json:"squad_id"`
+	ID           int64  `json:"id"`
 	Name         string `json:"name"`
 	SquadProfile string `json:"squad_profile"`
 	Level        string `json:"level"`
