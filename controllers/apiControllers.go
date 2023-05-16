@@ -2,9 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-dopamine/initializers"
 	"go-dopamine/models"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,29 +16,46 @@ func GetAllUsers(c *gin.Context) {
 
 	// data := []models.GetAllUsers{}
 
-	var user []models.GetAllUsers
-
-	// initializers.
-	// 	DB.
-	// 	Table("users").
-	// 	Joins("left join category_selection ON users.id = category_selection.user_id").
-	// 	Select("users.*, GROUP_CONCAT(category_selection.category_id) as category_ids").
-	// 	Group("users.id").
-	// 	Where("users.id = ?", 585).
-	// 	Find(&data)
+	var data []models.GetAllUsers
 
 	initializers.
 		DB.Table("users").
 		Select("users.*, GROUP_CONCAT(category_selection.category_id SEPARATOR ',') as category_ids").
 		Joins("LEFT JOIN category_selection ON users.id = category_selection.user_id").
 		Group("users.id").
-		Scan(&user)
+		Scan(&data)
 
-	// user.CategoryIDs = strings.Split(user.CategoryIDsStr, ",")
+	// for i := range data {
+
+	// 	data[i].CategoryIds =
+	// 		strings.Split(data[i].CategoryIDsStr, ",")
+	// }
+
+	for i := range data {
+		if data[i].CategoryIDsStr != "" {
+			categoryIDsStr := strings.Split(data[i].CategoryIDsStr, ",")
+			categoryIDs := make([]int, len(categoryIDsStr))
+
+			for j, str := range categoryIDsStr {
+				num, err := strconv.Atoi(str)
+				if err != nil {
+					// Handle conversion error
+					fmt.Printf("Error converting string to int: %v\n", err)
+					continue
+				}
+				categoryIDs[j] = num
+			}
+
+			data[i].CategoryIds = categoryIDs
+		}
+
+	}
+
+	// user.CategoryIds = strings.Split(user.CategoryIDsStr, ",")
 
 	c.JSON(200, gin.H{
-		"total":    len(user),
-		"response": user,
+		"total":    len(data),
+		"response": data,
 	})
 
 }
@@ -90,28 +110,57 @@ func GetSuggestedSquads(c *gin.Context) {
 }
 
 func GetAllExperts(c *gin.Context) {
-	
-type Sample struct{
-	Name string
-	Age int64
-	Email string
+
+	type Sample struct {
+		Name  string
+		Age   int64
+		Email string
+	}
+
+	data := Sample{
+		Name:  "Ameer",
+		Age:   26,
+		Email: "ameer@gmail.com",
+	}
+
+	log.Println(data)
+
+	c.JSON(200, gin.H{
+		"response": data,
+	})
+
 }
 
-data := Sample{
-	Name : "Ameer",
-	Age : 26,
-	Email : "ameer@gmail.com",
+func GetAllCustomers(c *gin.Context) {
+
+	var user []models.GetAllUsers
+
+	initializers.DB.Table("customer").Scan(&user)
+
+	var isTrue bool
+
+	if len(user) == 0 {
+		isTrue = false
+	} else {
+		isTrue = true
+	}
+
+	if len(user) == 0 {
+		c.JSON(200, gin.H{
+			"success":  isTrue,
+			"response": "Customers are empty",
+			"meta":     len(user),
+		})
+
+	} else {
+		c.JSON(200, gin.H{
+			"success":  isTrue,
+			"response": user,
+			"meta":     len(user),
+		})
+	}
+
 }
-
-log.Println(data)
-
-c.JSON(200, gin.H{
-	"response" : data,
-})
-
-}
-
-
 
 // func FetchAllPosts(c *gin.Context) {
 
@@ -211,4 +260,3 @@ c.JSON(200, gin.H{
 
 // initializers.DB.Table("expert").Joins("LEFT JOIN users ON users.id = expert.user_id").Where("users.id = ?", 585).Find(&expert)
 // log.Println(expert)
-

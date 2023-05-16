@@ -43,7 +43,7 @@ type GetAllUsers struct {
 	SessionType        *string `json:"session_type"`
 	Type               *string `json:"type"`
 	Status             *string `json:"status"`
-	CategoryIDs        string  `gorm:"column:category_ids"`
-	// CategoryIDs    []string `gorm:"-"`
-	// CategoryIDsStr string   `gorm:"column:category_ids"`
+	// CategoryIDs        string   `gorm:"column:category_ids"`
+	CategoryIds    []int  `gorm:"-"`
+	CategoryIDsStr string `gorm:"column:category_ids"`
 }
