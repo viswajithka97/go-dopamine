@@ -92,15 +92,15 @@ func GetSuggestedSquads(c *gin.Context) {
 func GetAllExperts(c *gin.Context) {
 	
 type Sample struct{
-	name string
-	age int64
-	email string
+	Name string
+	Age int64
+	Email string
 }
 
 data := Sample{
-	name : "Ameer",
-	age : 26,
-	email : "ameer@gmail.com",
+	Name : "Ameer",
+	Age : 26,
+	Email : "ameer@gmail.com",
 }
 
 log.Println(data)
