@@ -89,6 +89,30 @@ func GetSuggestedSquads(c *gin.Context) {
 
 }
 
+func GetAllExperts(c *gin.Context) {
+	
+type Sample struct{
+	name string
+	age int64
+	email string
+}
+
+data := Sample{
+	name : "Ameer",
+	age : 26,
+	email : "ameer@gmail.com",
+}
+
+log.Println(data)
+
+c.JSON(200, gin.H{
+	"response" : data,
+})
+
+}
+
+
+
 // func FetchAllPosts(c *gin.Context) {
 
 // 	// get the posts
@@ -187,3 +211,4 @@ func GetSuggestedSquads(c *gin.Context) {
 
 // initializers.DB.Table("expert").Joins("LEFT JOIN users ON users.id = expert.user_id").Where("users.id = ?", 585).Find(&expert)
 // log.Println(expert)
+
