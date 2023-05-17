@@ -2,9 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-dopamine/initializers"
 	"go-dopamine/models"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,6 +39,7 @@ func GetAllUsers(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"total":    len(user),
 		"response": user,
+		
 	})
 
 }
@@ -91,22 +95,39 @@ func GetSuggestedSquads(c *gin.Context) {
 
 func GetAllExperts(c *gin.Context) {
 	
-type Sample struct{
-	Name string
-	Age int64
-	Email string
-}
+// type Sample struct{
+// 	Name string
+// 	Age int64
+// 	Email string
+// }
 
-data := Sample{
-	Name : "Ameer",
-	Age : 26,
-	Email : "ameer@gmail.com",
-}
+// data := Sample{
+// 	Name : "Ameer",
+// 	Age : 26,
+// 	Email : "ameer@gmail.com",
+// }
 
-log.Println(data)
+// log.Println(data)
+
+var experts []models.ExpertListModel
+
+initializers.
+	DB.Table("expert e").
+	Select("e.id, e.first_name, e.category_ids").
+	Scan(&experts)
+
+	fmt.Printf("initial %T\n",experts[0].Category_ids)
+
+	for i := 0; i < len(experts); i++ {
+		strings.Trim(experts[i].Category_ids, "[]")
+		strings.Split(experts[i].Category_ids, ",")
+		strconv.ParseInt(experts[i].Category_ids, 10, 64)
+	}
+
+	fmt.Printf("converted %T\n",experts[0].Category_ids)
 
 c.JSON(200, gin.H{
-	"response" : data,
+	"response" : experts,
 })
 
 }
