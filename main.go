@@ -19,7 +19,7 @@ func main() {
 	r.GET("/getAllUsers", controllers.GetAllUsers)
 	r.POST("/getSuggestedSquads", controllers.GetSuggestedSquads)
 	r.GET("/getAllExperts", controllers.GetAllExperts)
-
+	r.GET("/getAllCustomers", controllers.GetAllCustomers)
 
 	r.Run()
 }
