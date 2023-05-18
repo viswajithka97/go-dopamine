@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+  container_name: go-dopamine
+  hostname: go-dopamine
+  restart: on-failure:3
+  build:
+    context: .
+    dockerfile: Dockerfile
+  environment:
+    GET_HOSTS_FROM: dns
+  ports:
+    - 3000:3000
